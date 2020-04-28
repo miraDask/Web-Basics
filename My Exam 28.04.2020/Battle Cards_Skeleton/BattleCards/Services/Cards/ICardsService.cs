@@ -5,10 +5,12 @@
 
     public interface ICardsService
     {
-        IEnumerable<CardListViewModel> GetAll();
+        IEnumerable<CardListViewModel> GetAll(string userId = null);
 
-        void Add(CardInputModel input);
+        void Add(CardInputModel input, string userId);
 
         bool AddToCollection(int cardId, string userId);
+
+        bool RemoveFromCollection(int cardId, string userId);
     }
 }

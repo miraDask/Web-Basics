@@ -4,9 +4,6 @@
     using BattleCards.ViewModels.Cards;
     using SIS.HTTP;
     using SIS.MvcFramework;
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
 
     public class CardsController : Controller
     {
@@ -47,9 +44,32 @@
                 return this.Redirect("/Users/Login");
             }
 
-            // TODO VALIDATION
+            if (input.Name.Length < 5 || input.Name.Length > 15 || string.IsNullOrEmpty(input.Name))
+            {
+                return this.View();
+            }
 
-            this.cardsService.Add(input);
+            if ( string.IsNullOrEmpty(input.ImageUrl) || string.IsNullOrEmpty(input.Keyword))
+            {
+                return this.View();
+            }
+
+            if (string.IsNullOrEmpty(input.Attack) || int.Parse(input.Attack) < 0)
+            {
+                return this.View();
+            }
+
+            if (string.IsNullOrEmpty(input.Health) || int.Parse(input.Health) < 0)
+            {
+                return this.View();
+            }
+
+            if (input.Description.Length > 200 || string.IsNullOrEmpty(input.Description))
+            {
+                return this.View();
+            }
+
+            this.cardsService.Add(input, this.User);
 
             return this.Redirect("/");
         }
@@ -65,13 +85,39 @@
             if (success)
             {
                 // I think that is more logical to redirect to the card collection so user can see that the card is added;
-                // Just in case, i will add commented code below so you can see that i understood the task,
-                // but it doesn't seem logocal to me to redirect to the same page if succeed or not;
-                return this.Redirect("/Cards/Collection");
-                // return this.Redirect("/Cards/All");
+                // Just in case, i will add commented code below :
+                // return this.Redirect("/Cards/Collection");
+                return this.Redirect("/Cards/All");
             }
 
             return this.Redirect("/Cards/All");
+        }
+
+        public HttpResponse RemoveFromCollection(int cardId)
+        {
+            if (!this.IsUserLoggedIn())
+            {
+                return this.Redirect("/Users/Login");
+            }
+
+            var success = this.cardsService.RemoveFromCollection(cardId, this.User);
+            if (success)
+            {
+                return this.Redirect("/Cards/Collection");
+            }
+
+            return this.Redirect("/Cards/Collection");
+        }
+
+        public HttpResponse Collection()
+        {
+            if (!this.IsUserLoggedIn())
+            {
+                return this.Redirect("/Users/Login");
+            }
+
+            var userCollection = this.cardsService.GetAll(this.User);
+            return this.View(userCollection);
         }
     }
 }
