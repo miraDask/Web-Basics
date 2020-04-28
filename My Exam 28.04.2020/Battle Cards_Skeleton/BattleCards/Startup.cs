@@ -4,7 +4,6 @@
     using BattleCards.Data;
     using BattleCards.Services.Cards;
     using BattleCards.Services.Users;
-    using Microsoft.EntityFrameworkCore;
     using SIS.HTTP;
     using SIS.MvcFramework;
 
@@ -14,7 +13,7 @@
         {
             using (var db = new ApplicationDbContext())
             { 
-                db.Database.Migrate();
+                db.Database.EnsureCreated();
             }
         }
 
